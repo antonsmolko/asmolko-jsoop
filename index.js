@@ -1,4 +1,4 @@
-class Set {
+class Sett {
     /**
      * Создает сет, опционально принимая элементы для добавления
      * @param {...*} [items]
@@ -71,7 +71,13 @@ class Set {
      * @returns {Set}
      */
     union(set) {
-        return this._store.concat(set._store);
+        let setStore = set._store;
+        setStore.forEach((item, i, setStore) => {
+            if(!this.has(item)) {
+                this._store.push(item);
+            }
+        })
+        return this;
     }
 
     /**
@@ -80,9 +86,11 @@ class Set {
      * @returns {Set}
      */
     intersection(set) {
-        return this._store.filter((item) => {
-            return !set._store.indexOf(item) == -1;
+        this._store = this._store.filter((item) => {
+            return set._store.indexOf(item) != -1;
         })
+
+        return this;
     }
 
     /**
@@ -91,9 +99,11 @@ class Set {
      * @returns {Set}
      */
     difference(set) {
-        return this._store.filter((item) => {
+        this._store = this._store.filter((item) => {
             return set._store.indexOf(item) == -1;
         })
+
+        return this;
     }
 
     /**
@@ -111,31 +121,6 @@ class Set {
         }
 
         return false;
-    }
-
-    /**
-     * Отсебятина
-     */
-
-    get entries() {
-        let entries = [];
-        let store = this._store;
-        store.forEach((item, i, store) => {
-            entries.push([i, item]);
-        });
-
-        return entries;
-    }
-
-    value(key) {
-        return this._store[key];
-    }
-
-    forEach(callback) {
-        let store = this._store
-        store.forEach((item, i, store) => {
-            callback(item, i, this);
-        });
     }
 }
 
