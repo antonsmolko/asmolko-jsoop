@@ -1,22 +1,30 @@
-class Set {
+class Sett {
+    /**
+     * Создает сет, опционально принимая элементы для добавления
+     * @param {...*} [items]
+     */
     constructor() {
         this._store = [];
     }
 
+    /**
+     * Возвращает размер сета
+     */
     get size() {
         return this._store.length;
     }
 
-    get entries() {
-        let entries = [];
-        let store = this._store;
-        store.forEach((item, i, store) => {
-            entries.push([i, item]);
-        });
-
-        return entries;
+    /**
+     * Возвращает элементы сета
+     */
+    get values() {
+        return this._store;
     }
 
+    /**
+     * Добавляет элемент в сет
+     * @param {*} item
+     */
     add(item) {
         if(!this.has(item)) {
             this._store.push(item);
@@ -25,11 +33,12 @@ class Set {
         }
     }
 
-    has(item) {
-        return this._store.indexOf(item) != -1;
-    }
-
-    delete(item) {
+    /**
+     * Удаляет элемент из сета и возвращает `true` если элемент удален и `false` если нет
+     * @param {*} item
+     * @returns {boolean}
+     */
+    remove(item) {
         let key = this._store.indexOf(item);        
         if(key != -1) {
             this._store.splice(key, 1);
@@ -40,8 +49,82 @@ class Set {
         return false;
     }
 
+    /**
+     * Проверяет наличие элемента в сете
+     * @param {*} item
+     * @returns {boolean}
+     */
+    has(item) {
+        return this._store.indexOf(item) != -1;
+    }
+
+    /**
+     * Очищает сет
+     */
     clear() {
         this._store = [];
+    }
+
+    /**
+     * Возращает сет состоящий из элементов двух сетов
+     * @param {Set} set
+     * @returns {Set}
+     */
+    union(set) {
+        return this._store.concat(set._store);
+    }
+
+    /**
+     * Возращает сет состоящий из элементов которые присутствуют в обоих сетах
+     * @param {Set} set
+     * @returns {Set}
+     */
+    intersection(set) {
+        return this._store.filter((item) => {
+            return !set._store.indexOf(item) == -1;
+        })
+    }
+
+    /**
+     * Возращает сет состоящий из элементов присутствующих в первом сете, и отсутствующих во втором
+     * @param {Set} set
+     * @returns {Set}
+     */
+    difference(set) {
+        return this._store.filter((item) => {
+            return set._store.indexOf(item) == -1;
+        })
+    }
+
+    /**
+     * Возвращает `true` если сет содержит в себе все элементы из друого сета
+     * @param {Set} set
+     * @returns {boolean}
+     */
+    isSubset(set) {
+        let missing = set._store.filter((item) => {
+            return this._store.indexOf(item) == -1;
+        })
+
+        if(!missing.length) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Отсебятина
+     */
+
+    get entries() {
+        let entries = [];
+        let store = this._store;
+        store.forEach((item, i, store) => {
+            entries.push([i, item]);
+        });
+
+        return entries;
     }
 
     value(key) {
@@ -55,20 +138,6 @@ class Set {
         });
     }
 }
-
-// let sett = new Set();
-
-// sett.add('asd')
-//     .add(143)
-//     .add({key: 'value'});
-
-// sett.forEach((value, key, sett) => {
-//     console.log(`${key}: ${value}`);
-// })
-
-// sett.forEach((value, key, sett) => {
-//     console.log(`${key}: ${value}`)
-// });
 
 
 class Stack {
@@ -121,13 +190,7 @@ class Stack {
     }
 }
 
-// let stack = new Stack();
 
-// stack.push(1345);
-// stack.push('sf');
-// stack.push('fsdgh');
-
-// console.log(stack.peek());
 
 class Queue {
     /**
@@ -185,13 +248,3 @@ class Queue {
         return this._store.pop();
     }
 }
-
-// let queuee = new Queue();
-
-// queuee.enqueue(1143);
-// queuee.enqueue('adfgd');
-// queuee.enqueue('dfgh');
-// queuee.enqueue(345);
-
-// console.log(queuee.dequeue());
-// console.log(queuee.back);
