@@ -4,14 +4,19 @@ class Set {
      * @param {...*} [items]
      */
     constructor() {
-        this._store = [];
+        this._store = {};
+        this._key = 1;
     }
 
     /**
      * Возвращает размер сета
      */
     get size() {
-        return this._store.length;
+        let size = 0;
+        for(let key in this._store) {
+            if(this._store.hasOwnProperty(key)) size++;
+        }
+        return size;
     }
 
     /**
@@ -27,8 +32,8 @@ class Set {
      */
     add(item) {
         if(!this.has(item)) {
-            this._store.push(item);
-
+            this._store[this._key] = item;
+            this._key += 1;
             return this;            
         }
     }
@@ -39,11 +44,13 @@ class Set {
      * @returns {boolean}
      */
     remove(item) {
-        let key = this._store.indexOf(item);        
-        if(key != -1) {
-            this._store.splice(key, 1);
+        let store = this._store;
+        for(let key in store) {
+            if(store[key] == item) {
+                delete store[key];
 
-            return true;
+                return true;
+            }
         }
 
         return false;
@@ -55,14 +62,20 @@ class Set {
      * @returns {boolean}
      */
     has(item) {
-        return this._store.indexOf(item) != -1;
+        let store = this._store;
+        for(let key in store) {
+            if(store[key] == item) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * Очищает сет
      */
     clear() {
-        this._store = [];
+        this._store = {};
     }
 
     /**
@@ -71,7 +84,14 @@ class Set {
      * @returns {Set}
      */
     union(set) {
-        return this._store.concat(set._store);
+        let setStore = set._store;
+        for(let key in setStore) {
+            if(!this.has(setStore[key])) {
+                this._store[this._key] = setStore[key];
+                this._key += 1;
+            }
+        }
+        return this;
     }
 
     /**
@@ -80,9 +100,15 @@ class Set {
      * @returns {Set}
      */
     intersection(set) {
-        return this._store.filter((item) => {
-            return !set._store.indexOf(item) == -1;
-        })
+        let setStore = set._store;
+        let interSet = new Set();
+        for(let key in setStore) {
+            if(this.has(setStore[key])) {
+                interSet.add(setStore[key]);
+            }
+        }
+
+        return interSet;
     }
 
     /**
@@ -91,9 +117,15 @@ class Set {
      * @returns {Set}
      */
     difference(set) {
-        return this._store.filter((item) => {
-            return set._store.indexOf(item) == -1;
-        })
+        let thisStore = this._store;
+        let diffSet = new Set();
+        for(let key in thisStore) {
+            if(!set.has(thisStore[key])) {
+                diffSet.add(thisStore[key]);
+            }
+        }
+        
+        return diffSet;
     }
 
     /**
@@ -102,40 +134,14 @@ class Set {
      * @returns {boolean}
      */
     isSubset(set) {
-        let missing = set._store.filter((item) => {
-            return this._store.indexOf(item) == -1;
-        })
-
-        if(!missing.length) {
-            return true;
+        let setStore = set._store;
+        for(let key in setStore) {
+            if(!this.has(setStore[key])) {
+                return false;
+            }
         }
 
-        return false;
-    }
-
-    /**
-     * Отсебятина
-     */
-
-    get entries() {
-        let entries = [];
-        let store = this._store;
-        store.forEach((item, i, store) => {
-            entries.push([i, item]);
-        });
-
-        return entries;
-    }
-
-    value(key) {
-        return this._store[key];
-    }
-
-    forEach(callback) {
-        let store = this._store
-        store.forEach((item, i, store) => {
-            callback(item, i, this);
-        });
+        return true;
     }
 }
 
